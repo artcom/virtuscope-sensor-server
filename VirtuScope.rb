@@ -1,6 +1,18 @@
 # VirtuScope.rb
+# gems
+require 'rubygems'
 require 'sinatra/base'
-require 'sensorsource.rb'
+require 'eventmachine'
+$eventmachine_library = :pure_ruby # need to force pure ruby
+
+# local includes
+if ARGV.include?("dummy")
+    puts "using dummysource"
+    require 'dummysource.rb'
+else
+    puts "using sensorsource"
+    require 'sensorsource.rb'
+end
 
 class VirtuScope < Sinatra::Base
 
@@ -13,9 +25,11 @@ class VirtuScope < Sinatra::Base
     def initialize()
         # initialize base class
         super
-    
+        
+        puts "does that get called every time?!"
+
         # initialize dummy serial source
-        @sensorsource = SensorSource.new('/dev/bla', 9600)
+        @sensorsource = SensorSource.new('/dev/ttyACM1', 9600)
         @sensorsource.register_event_handler(self)     
         
         @event_connections = [] 
