@@ -159,10 +159,13 @@ function set_button_state(button_id, value) {
 }
 
 function set_orientation(axis_id, value) {
-    $('#'+axis_id).text(value);
+    var degrees = (value/4096) * 360;
+    $('#'+axis_id).text(degrees.toFixed(2) + "° ("+ value +")" );
 }
 
 function set_temperature(value) {
+    console.log("temperature:");
+    console.log(value);
     $('#temperature').text(value.data);
 }
 
@@ -244,7 +247,7 @@ $(document).ready(function() {
                 </tr>
                 <tr>
                     <td>Temperature: </td>
-                    <td id="button4">0</td>
+                    <td id="temperature">0</td>
                 </tr>
 			</table>
 			<div class="footer"/>

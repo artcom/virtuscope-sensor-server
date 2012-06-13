@@ -4,7 +4,7 @@ require 'serialport'
 class SensorSource
     
     def initialize(port, baudrate)
-        @serialport = SerialPort.new "/dev/ttyACM1", 9600 
+        @serialport = SerialPort.new port, baudrate 
 
         # start periodic timer that reads the events periodically
         @ptimer = EventMachine::PeriodicTimer.new(1.0/60.0) {
@@ -12,7 +12,7 @@ class SensorSource
         }
     end
 
-    # parse messages of the following format: "[h,v,q,a,p,l] [-][0-9]\r\n"
+    # parse messages of the following format: "[h,v,q,a,p,l,t] [-][0-9]\r\n"
     # example: "h -349\r\n" - horizontal  rotary encoder value of -349
     # read until 100 pakets are processed or EOF is reached.
     # after processing a packet successfully the send callback is invoked.
