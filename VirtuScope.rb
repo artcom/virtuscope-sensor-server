@@ -26,8 +26,6 @@ class VirtuScope < Sinatra::Base
         # initialize base class
         super
         
-        puts "does that get called every time?!"
-
         # initialize dummy serial source
         @sensorsource = SensorSource.new('/dev/ttyACM1', 9600)
         @sensorsource.register_event_handler(self)     
