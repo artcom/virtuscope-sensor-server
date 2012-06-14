@@ -6,8 +6,11 @@ class SensorSource
     def initialize(port, baudrate)
         @serialport = SerialPort.new port, baudrate 
 
+        # set EventMachine resolution to enable fast refresh rates
+        EM.set_quantum 5
+        
         # start periodic timer that reads the events periodically
-        @ptimer = EventMachine::PeriodicTimer.new(1.0/1000.0) {
+        @ptimer = EventMachine::PeriodicTimer.new(1.0/60.0) {
             parse_sensor_data()
         }
     end

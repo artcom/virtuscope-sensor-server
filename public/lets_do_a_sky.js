@@ -1,21 +1,3 @@
-// 
-// function rotaryEncToDegrees(orientation) {
-//     var degrees = (orientation/4096) * 360;
-//     return degrees;
-// }
-// 
-// function rotaryEncToRadians(orientation) {
-//     var radians = (orientation/4096) * 2 * Math.PI;
-//     return radians;
-// }
-// 
-// function updateHorizontal(orientation) {
-//     _hOrientation = rotaryEncToRadians(orientation.data);
-// }
-// 
-// function updateVertical(orientation) {
-//     _vOrientation = rotaryEncToRadians(orientation.data);
-// }
 
 var obj = { rotH: 0,
             rotV: 0
@@ -55,17 +37,17 @@ window.onload = function ()
     obj.scene.add(obj.camera);
     obj.cubes = [];
 
-    var cubeMaterial = new THREE.MeshLambertMaterial({color: 0x80FF80});
+    obj.cubeMaterial = new THREE.MeshLambertMaterial({color: 0x80FF80});
     
-    var ext = 5;
-    var csize = 140;
+    var ext = 10;
+    var csize = 40;
 
     for (var x=-ext; x<ext; x++) {
         for (var y=-ext; y<ext; y++) {
             var randomHeight = Math.random()* csize/5 * Math.sqrt(x*x + y*y);
             var cube = new THREE.Mesh(
                     new THREE.CubeGeometry(csize, randomHeight, csize),
-                    cubeMaterial 
+                    obj.cubeMaterial 
                     );
 
             cube.position.x = x * csize * 2; 
@@ -110,6 +92,11 @@ function setupEventSource() {
     
     eventsource.addEventListener('h', obj.set_horizontal_orientation, false);
     eventsource.addEventListener('v', obj.set_vertical_orientation, false);
+    
+    eventsource.addEventListener('p', obj.set_button, false);
+    eventsource.addEventListener('q', obj.set_button, false);
+    eventsource.addEventListener('a', obj.set_button, false);
+    eventsource.addEventListener('l', obj.set_button, false);
 }
 
 obj.set_vertical_orientation = function(ev) {
@@ -118,6 +105,14 @@ obj.set_vertical_orientation = function(ev) {
 
 obj.set_horizontal_orientation = function(ev) {
     obj.rotH = (Number(ev.data)/4096) * Math.PI * 2; 
+}
+
+obj.set_button = function(ev) {
+    if (Number(ev.data) == 0) {
+        obj.cubeMaterial.color = new THREE.Color(0x80FF80);
+    } else {
+        obj.cubeMaterial.color = new THREE.Color(0x8080FF);
+    }
 }
 
 obj.animate = function(t) {

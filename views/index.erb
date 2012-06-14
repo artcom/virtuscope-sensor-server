@@ -179,7 +179,7 @@ function initialize_event_sources() {
     var eventsource = new EventSource("/event_stream");
     
     // connect event listeners for the buttons and orientation
-    eventsource.addEventListener('h', function(msg) { set_orientation("horizontal_orientation", msg.data); }, false);
+    eventsource.addEventListener('h', function(msg) { console.log(msg.data); set_orientation("horizontal_orientation", msg.data); }, false);
     eventsource.addEventListener('v', function(msg) { set_orientation("vertical_orientation", msg.data); }, false);
     eventsource.addEventListener('q', function(msg) { set_button_state("button1", msg.data); }, false);
     eventsource.addEventListener('a', function(msg) { set_button_state("button2", msg.data); }, false);
