@@ -7,7 +7,7 @@ class SensorSource
         @serialport = SerialPort.new port, baudrate 
 
         # start periodic timer that reads the events periodically
-        @ptimer = EventMachine::PeriodicTimer.new(1.0/60.0) {
+        @ptimer = EventMachine::PeriodicTimer.new(1.0/1000.0) {
             parse_sensor_data()
         }
     end
@@ -77,7 +77,7 @@ class SensorSource
                 handled_messages = handled_messages + 1
             end
         rescue EOFError
-            Finished processing the file
+            # Finished processing the file
         rescue Exception => e
             # puts "hm, what the hell.."
             # puts e
