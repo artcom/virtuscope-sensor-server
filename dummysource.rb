@@ -12,6 +12,8 @@ class SensorSource
     def initialize(port, baudrate)
         # dummy file reader.
         @file = File.new("sensordump.txt", "r")
+        
+        $logger.info("create new DummySource on device: #{port} ")
 
         # start periodic timer that reads the events periodically
         @ptimer = EventMachine::PeriodicTimer.new(1.0/60.0) {

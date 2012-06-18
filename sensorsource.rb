@@ -4,6 +4,8 @@ require 'serialport'
 class SensorSource
     
     def initialize(port, baudrate)
+        $logger.info("create new SerialPort on device: #{port} baud: #{baudrate}")
+        
         @serialport = SerialPort.new port, baudrate 
 
         # set EventMachine resolution to enable fast refresh rates
