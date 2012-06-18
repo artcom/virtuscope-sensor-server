@@ -46,7 +46,10 @@ class VirtuScope < Sinatra::Base
         @sensorsource.register_event_handler(self)     
         
         @event_connections = [] 
-        @last_values = {} 
+        @last_values = {"h"=>0,"v"=>0,
+             "a"=>0,"q"=>0,
+             "l"=>0,"p"=>0,
+             "t"=>0 } 
     end
 
     def handle_sensor_event(eventtype, eventvalue)
