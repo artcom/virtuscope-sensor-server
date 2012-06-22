@@ -37,7 +37,7 @@ class SensorSource
                 # search for valid start symbol, i.e. one of [h,v,q,a,p,l]
                 if /[^hvqaplt]/.match(msg)
                     # restart parsing process until a valid symbol is found
-                    puts "no valid messagetype found. got: #{msg}"
+                    # puts "no valid messagetype found. got: #{msg}"
                     next
                 end
                 
@@ -47,7 +47,7 @@ class SensorSource
                 msg = @serialport.read_nonblock(1)
                 # search for " "
                 if /[^ ]/.match(msg)
-                    puts "space missing after first byte. got: #{msg}"
+                    $logger.info("space missing after first byte. got: #{msg}")
                     next
                 end
             ###

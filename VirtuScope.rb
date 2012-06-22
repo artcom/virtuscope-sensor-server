@@ -53,9 +53,9 @@ class VirtuScope < Sinatra::Base
     end
 
     def handle_sensor_event(eventtype, eventvalue)
+        @last_values[eventtype] = eventvalue
         @event_connections.each do |out_stream|
             out_stream << "event: #{eventtype}\ndata: #{eventvalue} \n\n"
-            @last_values[eventtype] = eventvalue
         end
     end
 
@@ -99,7 +99,7 @@ class VirtuScope < Sinatra::Base
             404
         end
     end
-    
+
     get '/' do
         # display the status page. page template is located here: "views/index.erb"
         erb :index
