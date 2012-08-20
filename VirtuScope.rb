@@ -4,6 +4,7 @@ require 'rubygems'
 require 'sinatra/base'
 require 'eventmachine'
 require 'logger'
+require 'serialport'
 
 $eventmachine_library = :pure_ruby # need to force pure ruby
 
@@ -15,6 +16,8 @@ else
     puts "using sensorsource"
     require 'sensorsource.rb'
 end
+
+$z = 0
 
 class VirtuScope < Sinatra::Base
 
@@ -50,6 +53,9 @@ class VirtuScope < Sinatra::Base
              "a"=>0,"q"=>0,
              "l"=>0,"p"=>0,
              "t"=>0 } 
+    
+        @visca = SerialPort.new("/dev/ttyACM0", 38400)
+        $z = 0
     end
 
     def handle_sensor_event(eventtype, eventvalue)
@@ -82,6 +88,28 @@ class VirtuScope < Sinatra::Base
             EventMachine::PeriodicTimer.new(20) { out << "event: ping\n data: \n\n" }
         end
     end
+
+    get '/zoom_in' do
+	if ($z < 4):
+		$z = $z + 1 
+	end
+		
+	a = [[0x81,0x01,0x04,0x47,0x00+$z,0x00,0x00,0x00,0xff].pack('C*')]
+        @visca.write(a)	
+
+        "zoomlevel: " + $z.to_s
+    end
+
+    get '/zoom_out' do
+	if ($z > 0):
+		$z = $z - 1 
+	end
+	
+	a = [[0x81,0x01,0x04,0x47,0x00+$z,0x00,0x00,0x00,0xff].pack('C*')]
+        @visca.write(a)	
+
+        "zoomlevel: " + $z.to_s
+    end	
 
     get '/sensors.*' do |format|
         

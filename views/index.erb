@@ -7,16 +7,27 @@
 <style type="text/css">
 
 body {
-    background-color: #70707000;
+    background-color: #000000;
     font-family: Courier, "Courier New", monospace;
     color: white;
 }
 
+video {
+	width: 100%;
+        height: 100%;
+	position: absolute;
+        left: 0px;
+	top: 0px;
+	z-index:0;
+}
+
+
 #ancestor {
-    width: 400px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 25px;
+    width: 280px;
+    position: absolute;
+   left: 20px;
+   top: 120px;   
+z-index: 1; 
 }
 
 #parent {
@@ -37,7 +48,7 @@ body {
     border-right: none;
     padding-bottom: 15px;
     padding-top: 15px;
-    font-size: 17pt;
+    font-size: 10pt;
     text-align: center;
     width: 25%;
     background-color: #292929;
@@ -63,17 +74,20 @@ body {
 }
 
 .selected_tab {
-    background-color: black;
-    border-color: black;
+    background-color: #000000;
+    border-color: #000000;
+    opacity: 0.4;
 }
 
 #tab_contents {
-	padding-top: 35px;
+	padding-top: 0px;
 	width: 100%;
-	background-color: black;
+	background-color: #000000;
 	border-bottom-left-radius: 20px;
 	border-bottom-right-radius: 20px;
-	margin-bottom: 20px;
+	margin-bottom: 0px;
+	opacity: 0.4;
+	font-size: 12pt;
 }
 
 .footer {
@@ -92,7 +106,7 @@ body {
     display: table-cell;
     text-align: right;
     min-width: 100px;
-    font-size: 16pt;
+    font-size: 10pt;
     padding-bottom: 5px;
     margin-top: -7px;
 }
@@ -106,6 +120,7 @@ body {
   	padding-left: 30px;
   	padding-right: 30px;
 	border-radius: 5;
+	font-size: 12pt;
 }
 
 #detail_function {
@@ -113,6 +128,7 @@ body {
 	width: 100%;
 	font-size: 11pt;
 	color: #BBB;
+	font-size: 12pt;
 }
 
 #data_table {
@@ -121,9 +137,11 @@ body {
 	width: 100%;
 	padding-left: 10px;
 	padding-right: 10px;
+	font-size: 8pt;
 }
 
 .data_table_row {
+	font-size: 12pt;
 }
 
 .data_table_cell {
@@ -131,6 +149,7 @@ body {
 	padding-bottom: 5px;
 	vertical-align: top;
 	overflow:hidden;
+	font-size: 12pt;
 	border-bottom: #444 dotted 1px;
 	word-wrap: break-word;
 }
@@ -164,8 +183,6 @@ function set_orientation(axis_id, value) {
 }
 
 function set_temperature(value) {
-    console.log("temperature:");
-    console.log(value);
     $('#temperature').text(value.data);
 }
 
@@ -179,18 +196,24 @@ function initialize_event_sources() {
     var eventsource = new EventSource("/event_stream");
     
     // connect event listeners for the buttons and orientation
-    eventsource.addEventListener('h', function(msg) { console.log(msg.data); set_orientation("horizontal_orientation", msg.data); }, false);
+    eventsource.addEventListener('h', function(msg) { set_orientation("horizontal_orientation", msg.data); }, false);
     eventsource.addEventListener('v', function(msg) { set_orientation("vertical_orientation", msg.data); }, false);
     eventsource.addEventListener('q', function(msg) { set_button_state("button1", msg.data); }, false);
     eventsource.addEventListener('a', function(msg) { set_button_state("button2", msg.data); }, false);
-    eventsource.addEventListener('p', function(msg) { set_button_state("button3", msg.data); }, false);
+    eventsource.addEventListener('p', function(msg) { 
+		if (Number(msg.data) == 0) {
+			$.ajax({url: "zoom_in", context: document.body});
+		}
+                set_button_state("button3", msg.data); 
+	}, false);
     eventsource.addEventListener('t', set_temperature, false);
     
-    eventsource.addEventListener('l', 
-        function(msg) { 
-            set_button_state("button4", msg.data); 
-        }, 
-    false);
+    eventsource.addEventListener('l', function(msg) { 
+		if (Number(msg.data) == 0) {
+			$.ajax({url: "zoom_out", context: document.body});
+		}
+                set_button_state("button4", msg.data); 
+	}, false);
 }
 
 $(document).ready(function() {
@@ -202,6 +225,27 @@ $(document).ready(function() {
    
     // connect event sources
     initialize_event_sources();
+
+    // setup video
+    function onError(error) {
+	console.log("Error: " + error);    
+    }
+    
+    function successCallback(stream) {
+	console.log("success: ");    
+	console.log(stream);    
+	
+        var videoElement = document.getElementById('sourcevid');
+        console.log(videoElement.autoplay); 
+        videoElement.src = window.webkitURL.createObjectURL(stream);
+	console.log("success: " + videoElement.src);    
+    }
+    var videoElement = document.getElementById('sourcevid');
+    navigator.getUserMedia = navigator.getUserMedia ? navigator.getUserMedia : navigator.webkitGetUserMedia;
+
+    // var foo = navigator.getUserMedia({'audio': false, 'video': true}, successCallback, onError);
+    var foo = navigator.getUserMedia('video', successCallback, onError);
+    
 })
 </script>
 
@@ -210,16 +254,13 @@ $(document).ready(function() {
 
 <!-- layout taken from the fabulous fish shell configuration page -->
 <div id="ancestor">
-    <span style="font-size: 30pt ">virtuscope</span><p id="global_error" class="error_msg"></p>
+    <span style="font-size: 30pt ">virtuscope</span>
     <div id="parent">
         <div id="tab_parent">
             <div class="tab selected_tab" id="tab_colors">sensors</div>
         </div>
         
         <div id="tab_contents">
-			<div id="master_detail_table">
-				<div id="master"></div>
-			</div>
 			<table id="data_table">
                 <tr>
                     <td>horizontal angle: </td>
@@ -254,6 +295,9 @@ $(document).ready(function() {
 		</div>
     </div>
 </div>
+</div>
+<video id="sourcevid" autoplay="true"/>
+
 
 </body></html>
 
