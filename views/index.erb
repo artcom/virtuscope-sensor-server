@@ -172,14 +172,23 @@ z-index: 1;
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript">
 
+var orientations = {horizontal_orientation: 0, vertical_orientation: 0};
+
 function set_button_state(button_id, value) {
-	var button_text = ( Number(value)== 0)?"UP":"DOWN"; 
-    $('#'+button_id).text(button_text);
+ 	var button_text = ( Number(value)== 0)?"UP":"DOWN"; 
+     $('#'+button_id).text(button_text);
 }
 
 function set_orientation(axis_id, value) {
-    var degrees = (value/4096) * 360;
-    $('#'+axis_id).text(degrees.toFixed(2) + "° ("+ value +")" );
+    orientations[axis_id] = value;
+}
+
+function updateLabels() {
+    for (var key in orientations) {
+        var value = orientations[key];
+        var degrees = (value/4096)*360;
+        $('#'+key).text(degrees.toFixed(2) + "° ("+ value +")" );
+    }
 }
 
 function set_temperature(value) {
@@ -245,7 +254,9 @@ $(document).ready(function() {
 
     // var foo = navigator.getUserMedia({'audio': false, 'video': true}, successCallback, onError);
     var foo = navigator.getUserMedia('video', successCallback, onError);
-    
+
+    window.setInterval(updateLabels, 1000);
+    // window.webkitRequestAnimationFrame(updateLabels); 
 })
 </script>
 

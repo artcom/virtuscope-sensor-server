@@ -26,7 +26,6 @@ class VirtuScope < Sinatra::Base
         mime_type :event_stream, 'text/event-stream'
         
         Dir.mkdir('logs') unless File.exist?('logs')
-    
         $logger = Logger.new('logs/common.log', 'daily')
     end
    
@@ -35,7 +34,8 @@ class VirtuScope < Sinatra::Base
         # initialize base class
         super
 
-        $logger.info("");$logger.info("")
+        $logger.info("");
+        $logger.info("")
         $logger.info(">> --------------------------------------")
         $logger.info(">> Initializing VirtuScope Sensor Server.")
 

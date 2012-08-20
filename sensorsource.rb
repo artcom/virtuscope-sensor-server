@@ -83,14 +83,18 @@ class SensorSource
             end
         rescue EOFError
             # Finished processing the file
+   	    $logger.error("EOFError while reading from the serial port") 
         rescue Exception => e
-            # puts "hm, what the hell.."
-            # puts e
+            $logger.error("exception caught: " + e)
         end
     end
 
     def register_event_handler(obj)
-        @callbackhandler = obj # if obj.respond_to?("handle_sensor_event")
+        if obj.respond_to?("handle_sensor_event"):
+	    @callbackhandler = obj 
+	else
+            logger.error("could not register callback, because to passed object does not respond to \"handle_sensor_event\"");
+        end
     end  
 end
 
