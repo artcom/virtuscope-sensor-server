@@ -1,0 +1,59 @@
+#!/bin/sh
+
+# init script for the sensorserver daemon. goes into /etc/init.d/
+
+pidfile="/var/run/sensorserver.pid"
+appdir="/home/timescope/virtuscope-sensor-server"
+ruby="/usr/local/rvm/bin/ruby-1.8.7-p370@sensorserver"
+daemon="$appdir/VirtuScope.rb"
+
+name="sensorserver"
+user=timescope
+
+stop_sensorserver() { 
+    echo "stopping sensorserver ..."
+    start-stop-daemon --stop --pidfile $pidfile -v 
+}
+
+start_sensorserver() {
+    echo "starting sensorserver ..."
+    echo start-stop-daemon -c $user --start --background --make-pidfile -v --chdir $appdir --pidfile $pidfile --exec $ruby -- $daemon
+    start-stop-daemon -c $user --start --background --make-pidfile -v --chdir $appdir --pidfile $pidfile --exec $ruby -- $daemon
+}
+ 
+running() {
+    if [ -f $pidfile ]
+    then
+        return 0
+    else
+        return 1
+    fi
+}
+ 
+if [ ! -x $daemon ]
+then
+    echo "cannot find executable $daemon. aborting."
+    exit 0
+fi
+
+case "$1" in
+    start)
+        if running 
+        then
+            echo "sensorserver already running or stale pidfile. aborting."
+            exit 0
+        fi
+        start_sensorserver
+        ;; 
+    stop) 
+        stop_sensorserver && rm $pidfile
+        ;;
+    restart)
+        stop_sensorserver && rm $pidfile
+        start_sensorserver
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}" >&2
+        exit 3
+        ;;
+esac
