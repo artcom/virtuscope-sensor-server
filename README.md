@@ -37,7 +37,8 @@ Using the Eventstream
 
 The server provides an event stream which can be used by the EventSource Object in any html5 capable web browser.
 
-`// this function is executed if the page has been loaded - (uses jQuery)
+`
+// this function is executed if the page has been loaded - (uses jQuery)
 $(document).ready(function() {
         // create event source for virtuscope events
         var eventsource = new EventSource("/event_stream");
@@ -48,7 +49,7 @@ $(document).ready(function() {
             console.log("horizontal angle: " + msg.data); 
             }); 
         };
- `
+`
 
 Available events are:
 * "h" - horizontal rotary encoder value
@@ -77,9 +78,9 @@ Other datasources
 =================
 
 In addition to the event streams the server send provides xml and json output. 
-Here comes the json:
+Here comes the json: http://localhost:4567/sensors.json
+
 `
-# http://localhost:4567/sensors.json
 { 
     "horizontal" : 1345, 
         "vertical" : 52, 
@@ -91,9 +92,9 @@ Here comes the json:
 }
 `
 
-Here come the xml:
+Here come the xml: http://localhost:4567/sensors.xml
+
 `
-# http://localhost:4567/sensors.xml
 <sensors>
 <sensor id="h" name="horizontal">1345</sensor>
 <sensor id="v" name="vertical">52</sensor>
